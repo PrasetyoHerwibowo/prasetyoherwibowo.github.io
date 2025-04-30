@@ -1,0 +1,212 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Segoe UI", sans-serif;
+  background: linear-gradient(135deg, #0d0d0d, #001f3f);
+  color: #fff;
+  padding: 20px;
+  line-height: 1.6;
+}
+
+.profile-photo {
+  width: 150px; /* Ukuran foto */
+  height: 150px; /* Ukuran foto */
+  border-radius: 50%; /* Membuat foto berbentuk lingkaran */
+  object-fit: cover; /* Memastikan gambar terpotong proporsional */
+  margin-bottom: 20px; /* Jarak antara foto dan judul */
+}
+
+/* supaya scroll nya halus*/
+html {
+  scroll-behavior: smooth;
+}
+
+/* Transparent Navbar */
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  background: rgba(0, 0, 0, 0.3); /* transparan, bisa ganti warna */
+  backdrop-filter: blur(8px); /* efek blur latar belakang */
+  z-index: 1000;
+}
+
+.navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.logo {
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.2rem;
+  text-decoration: none;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+}
+
+.nav-links li a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.nav-links li a:hover {
+  color: #00ffe1; /* efek hover */
+}
+
+/* Tambahkan padding ke header agar tidak ketutupan navbar */
+header {
+  padding-top: 80px;
+}
+
+header {
+  text-align: center;
+  margin-top: 50px;
+}
+
+header p {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-top: 10px;
+  color: #ccc;
+}
+
+header .glow {
+  font-size: 3rem;
+  font-weight: bold;
+  font-style: italic;
+  color: #fff;
+}
+
+.social-icons {
+  margin-top: 15px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.social-icons a img {
+  width: 32px;
+  height: 32px;
+  transition: transform 0.3s ease;
+}
+
+.social-icons a img:hover {
+  transform: scale(1.2);
+}
+
+.terminal {
+  background-color: #0d0d0d;
+  color: #33ff33;
+  font-family: "Courier New", Courier, monospace;
+  padding: 20px 15px;
+  margin: 30px auto;
+  max-width: 600px;
+  border-radius: 10px;
+  border-left: 4px solid #33ff33;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+  font-size: 0.9rem;
+}
+
+.terminal-box {
+  white-space: pre-wrap;
+  word-break: break-word;
+  height: 250px;
+  overflow-y: hidden;
+  padding-right: 10px;
+  position: relative;
+}
+
+.cursor {
+  display: inline-block;
+  width: 1px;
+  background-color: #33ff33;
+  animation: blink 1s step-start infinite;
+  vertical-align: bottom;
+  margin-left: 2px;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+section {
+  margin: 50px 0;
+  padding: 20px;
+  border-radius: 12px;
+  background-color: rgba(0, 0, 50, 0.2);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.certificates {
+  margin-top: 50px;
+  padding: 0 20px;
+}
+
+.certificates {
+  margin-top: 60px;
+  padding: 40px 20px;
+
+  background-color: rgba(200, 200, 200, 0.07);
+  border-radius: 16px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.certificate-container {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.cert-item {
+  max-width: 300px;
+  text-align: center;
+  margin: 10px;
+}
+
+.cert-item img {
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+  transition: transform 0.3s ease;
+  display: block;
+}
+
+.caption {
+  margin-top: 10px;
+  font-size: 1rem;
+  color: #ccc;
+  font-weight: 500;
+}
+
+footer {
+  text-align: center;
+  margin-top: 60px;
+  padding: 10px;
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
