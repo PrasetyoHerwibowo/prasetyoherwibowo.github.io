@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KERIPTO UYEEE</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 20px;
+        background-color: #f4f4f9;
+      }
+      .container {
+        max-width: 800px;
+        margin: auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      textarea {
+        width: 100%;
+        height: 150px;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+        font-family: monospace;
+        font-size: 14px;
+        resize: vertical;
+      }
+      .controls {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+      button {
+        flex: 1;
+        background-color: #ff6f00; /* Warna oranye */
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+      button:hover {
+        background-color: #cc5900;
+      }
+      #status {
+        margin-top: 10px;
+        padding: 10px;
+        border-radius: 4px;
+        font-weight: bold;
+        text-align: center;
+        background-color: #e9ecef;
+      }
+      .section-heading {
+        margin-top: 20px;
+        border-bottom: 2px solid #ccc;
+        padding-bottom: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Crypto Toolbox (ASCII, Base64, Base85, ROT13)</h2>
+
+      <p>Input / Output:</p>
+      <textarea id="ioBox" placeholder="Masukkan teks di sini..."></textarea>
+
+      <div id="status">Status: Siap</div>
+
+      <h3 class="section-heading">Pilih Operasi</h3>
+
+      <div class="controls">
+        <button onclick="process('encrypt', 'ascii')">Encode ASCII</button>
+        <button onclick="process('encrypt', 'base64')">Encode Base64</button>
+        <button onclick="process('encrypt', 'base85')">Encode Base85</button>
+        <button onclick="process('encrypt', 'rot13')">Encode ROT13</button>
+      </div>
+
+      <div class="controls">
+        <button onclick="process('decrypt', 'ascii')">Decode ASCII</button>
+        <button onclick="process('decrypt', 'base64')">Decode Base64</button>
+        <button onclick="process('decrypt', 'base85')">Decode Base85</button>
+        <button onclick="process('decrypt', 'rot13')">Decode ROT13</button>
+      </div>
+    </div>
+
+    <script>
+      // ===================================
+      // 1. ROT13 Implementation
+      // ===================================
+      function rot13(str) {
+        return str.replace(/[a-zA-Z]/g, function (c) {
+          return String.fromCharCode(
+            c.charCodeAt(0) + (c.toLowerCase() <= "m" ? 13 : -13)
+          );
+        });
+      }
+
+      // ===================================
+      // 2. ASCII (Hex) Implementation
+      // ===================================
+      function encodeASCII(str) {
+        return str
+          .split("")
+          .map((c) => c.charCodeAt(0).toString(16).padStart(2, "0"))
+          .join(" ");
+      }
+
+      function decodeASCII(str) {
+        try {
+          // Memisahkan berdasarkan spasi dan mengonversi Hex kembali ke karakter
+          return str
+            .trim()
+            .split(/\s+/) // Pisahkan oleh satu atau lebih spasi
+            .map((hex) => String.fromCharCode(parseInt(hex, 16)))
+            .join("");
+        } catch (e) {
+          throw new Error("Input ASCII Hex tidak valid.");
+        }
+      }
+
+      // ===================================
+      // 3. Base64 Implementation (Bawaan JS)
+      // ===================================
+      // Perlu mengubah string biasa ke string Base64 yang aman menggunakan btoa/atob
+      function encodeBase64(str) {
+        return btoa(unescape(encodeURIComponent(str)));
+      }
+
+      function decodeBase64(str) {
+        try {
+          return decodeURIComponent(escape(atob(str)));
+        } catch (e) {
+          throw new Error("Input Base64 tidak valid.");
+        }
+      }
+
+      // ===================================
+      // 4. Base85 Implementation (Library Minimal)
+      // ===================================
+      // Library Base85 minimal, menggunakan Z85 (ZeroMQ Base85)
+      // Kode Base85 ini dibuat simple untuk kebutuhan lokal.
+
+      const Z85 = {
+        _CHARS:
+          "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.-:+=^!/*?&<>()[]{}@%$#",
+        _CHARS_MAP: {},
+
+        // Inisialisasi map untuk lookup
+        init: function () {
+          if (Object.keys(this._CHARS_MAP).length === 0) {
+            for (let i = 0; i < this._CHARS.length; i++) {
+              this._CHARS_MAP[this._CHARS[i]] = i;
+            }
+          }
+        },
+
+        // Encode Base85
+        encode: function (str) {
+          this.init();
+          const bytes = new TextEncoder().encode(str);
+          let encoded = "";
+          const len = bytes.length;
+          let padding = 0;
+
+          let i = 0;
+          while (i < len) {
+            let chunk = 0;
+            // Baca 4 byte
+            for (let j = 0; j < 4; j++) {
+              chunk = (chunk << 8) | (i < len ? bytes[i++] : 0);
+              if (i > len) padding++; // Hitung padding
+            }
+
+            // Encode 4 byte menjadi 5 karakter Base85
+            let value = chunk;
+            let quintet = "";
+            for (let j = 0; j < 5; j++) {
+              quintet = this._CHARS[value % 85] + quintet;
+              value = Math.floor(value / 85);
+            }
+            encoded += quintet;
+          }
+
+          // Hapus karakter padding (jika ada)
+          if (padding > 0) {
+            encoded = encoded.substring(0, encoded.length - padding);
+          }
+
+          return encoded;
+        },
+
+        // Decode Base85
+        decode: function (str) {
+          this.init();
+          let decoded = [];
+          const len = str.length;
+          let i = 0;
+
+          // Hitung padding untuk hasil yang benar
+          let padding = 0;
+          const remainder = len % 5;
+          if (remainder > 0) {
+            padding = 5 - remainder;
+            // Tambahkan karakter padding 'z' atau spasi jika perlu
+            // Untuk Z85, kita anggap padding hanya mempengaruhi hasil byte akhir
+          }
+
+          let buffer = new Uint8Array(Math.ceil(((len + padding) * 4) / 5));
+          let bufferIndex = 0;
+
+          while (i < len) {
+            let quintet = str.substring(i, i + 5);
+
+            // Tambahkan padding di Base85 agar panjangnya kelipatan 5
+            while (quintet.length < 5) {
+              quintet += this._CHARS[0]; // Padding dengan karakter '0'
+            }
+
+            let value = 0;
+            for (let j = 0; j < 5; j++) {
+              const char = quintet[j];
+              const charVal = this._CHARS_MAP[char];
+              if (charVal === undefined) {
+                throw new Error("Karakter Base85 tidak valid.");
+              }
+              value = value * 85 + charVal;
+            }
+
+            // Decode 5 karakter menjadi 4 byte
+            for (let j = 3; j >= 0; j--) {
+              buffer[bufferIndex + j] = value & 0xff;
+              value >>>= 8;
+            }
+            bufferIndex += 4;
+            i += 5;
+          }
+
+          // Hapus byte yang dihasilkan dari padding (jika ada)
+          let resultBytes = buffer.subarray(0, bufferIndex - padding);
+
+          return new TextDecoder().decode(resultBytes);
+        },
+      };
+
+      // ===================================
+      // 5. Main Processor
+      // ===================================
+      function process(mode, type) {
+        const ioBox = document.getElementById("ioBox");
+        const statusDiv = document.getElementById("status");
+        const input = ioBox.value.trim();
+        let output = "";
+
+        if (!input) {
+          statusDiv.textContent = "Status: Masukkan teks input dulu!";
+          return;
+        }
+
+        try {
+          if (type === "rot13") {
+            // ROT13 adalah cipher substitusi, Encrypt dan Decrypt sama
+            output = rot13(input);
+          } else if (mode === "encrypt") {
+            switch (type) {
+              case "ascii":
+                output = encodeASCII(input);
+                break;
+              case "base64":
+                output = encodeBase64(input);
+                break;
+              case "base85":
+                output = Z85.encode(input);
+                break;
+            }
+          } else if (mode === "decrypt") {
+            switch (type) {
+              case "ascii":
+                output = decodeASCII(input);
+                break;
+              case "base64":
+                output = decodeBase64(input);
+                break;
+              case "base85":
+                output = Z85.decode(input);
+                break;
+            }
+          }
+
+          ioBox.value = output;
+          statusDiv.textContent = `Status: Sukses! ${type.toUpperCase()} ${
+            mode === "encrypt" ? "Encoded" : "Decoded"
+          }.`;
+          statusDiv.style.backgroundColor = "#d4edda";
+          statusDiv.style.color = "#155724";
+        } catch (error) {
+          statusDiv.textContent = `Status: ERROR! Gagal ${mode} ${type}. Pesan: ${error.message}`;
+          statusDiv.style.backgroundColor = "#f8d7da";
+          statusDiv.style.color = "#721c24";
+        }
+      }
+    </script>
+  </body>
+</html>
